@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Recipe Book</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fontAwesome/css/all.css">
+</head>
+
+<body class="body-recipes" onload="getRecipe()">
+
+    <div class="header">
+        <a href="list-recipes.html" id="back-link">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <img src="images/logo-text.png" alt="Logo Text">
+    </div>
+
+    <div id="recipe">
+        <div class="recipe-details" id="output">
+            <!-- Recipe content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to get the ID from the URL
+        function getId() {
+            var url = window.location.href;
+            var pos = url.search("=");
+            var id = url.slice(pos + 1);
+            return id;
+        }
+
+        // Function to fetch and display the recipe
+        function getRecipe() {
+            var id = getId();
+            var rootPath = "https://mysite.itvarsity.org/api/recipe-book/";
+            var fullPath = rootPath + "get-recipes/?id=" + id;
+
+            fetch(fullPath)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                var output = `
+                    <img src="${rootPath}uploads/${data[0].image}" alt="Recipe Image"/>
+                    <h1>${data[0].title}</h1>
+                    <div class="recipe-details-ingredients">
+                        <h2>Ingredients</h2>
+                        <ul>
+                            ${data[0].ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="recipe-details-steps">
+                        <h2>Method</h2>
+                        <ol>
+                            ${data[0].method.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+                document.getElementById("output").innerHTML = output;
+            })
+            .catch(function(error) {
+                console.error('Error fetching the recipe:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
